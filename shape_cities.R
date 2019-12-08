@@ -83,15 +83,54 @@ pols = city_boundaries@polygons[[1]]@Polygons # only one layer? #SpatialPOlygonD
 # Idea: I want to analyze only the cities that appear in UCSB, but compute the shape based on NTL data.
 
 
+ucdb_shp_path = "/Users/rodrigo/Documents/urban-economics/trabajo-uc3m/GHS_STAT_UCDB2015MT_GLOBE_R2019A_V1_0/GHS_STAT_UCDB2015MT_GLOBE_R2019A_V1_0.shp"
+ucdb = st_read(ucdb_shp_path)
 
 
+# Urban Centre Extension:
+# BBX_LATMN – latitude of the low left corner of the bounding box;
+# BBX_LONMN - longitude of the low left corner of the bounding box;
+# BBX_LATMX - latitude of the top right corner of the bounding box;
+# BBX_LONMX - longitude of the top right corner of the bounding box.
 
 
+# Location:
+# GCPNT_LAT: Latitude of the geometric centroid;
+# GCPNT_LON: Longitude of the geometric centroid;
 
 
+esp_ucdb_sh = ucdb %>%
+  filter(CTR_MN_ISO == "ESP")
+  #filter(!UC_NM_MN == "Santa Cruz De Tenerife [ESP]" ) %>%
+  #filter(!UC_NM_MN == "Las Palmas Gran Canaria [ESP]" ) %>%
+  #filter(!UC_NM_MN == "Ceuta [ESP]; Fnideq [MAR]") %>%
+  #filter(!UC_NM_MN == "Vilanova I La G [ESP]")
+
+plot(esp_ucdb_sh$geometry)
+# compare this shapes to the ones I get with NTL data?
+# What year are these shapes from? I guess 2015.
+
+esp_ucdb_coord = as.data.frame(ucdb) %>%
+  filter(CTR_MN_ISO == "ESP") %>%
+  dplyr::select(GCPNT_LAT, GCPNT_LON)
 
 
+# select only the cities that are in the ucdb for Spain. 
+# the coordinates of the centroids have to be inside pols
+points_ucdb = st_as_sf(esp_ucdb_coord, coords = c("GCPNT_LON","GCPNT_LAT"))
+plot(points_ucdb)
 
+#doesnt work
+pols_sf = st_as_sf(pols) 
+intersection = st_join(points_ucdb, pols_sf)
+
+# first approach: convert to points and points into polygons sf
+y = pols[[1]]
+y@coords
+# https://gis.stackexchange.com/questions/332427/issues-converting-points-to-polygon-in-r
+
+# make st_as_sf work
+st_as_sfc.SpatialPolygons*(pols)
 
 
 
