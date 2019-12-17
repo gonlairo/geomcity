@@ -120,18 +120,43 @@ esp_ucdb_coord = as.data.frame(ucdb) %>%
 points_ucdb = st_as_sf(esp_ucdb_coord, coords = c("GCPNT_LON","GCPNT_LAT"))
 plot(points_ucdb)
 
-#doesnt work
-pols_sf = st_as_sf(pols) 
-intersection = st_join(points_ucdb, pols_sf)
 
 # first approach: convert to points and points into polygons sf
-y = pols[[1]]
-y@coords
 # https://gis.stackexchange.com/questions/332427/issues-converting-points-to-polygon-in-r
 
-# make st_as_sf work
-st_as_sfc.SpatialPolygons*(pols)
+df_list = list()
+for (i in seq(length(pols))) {
+  coords = pols[[i]]@coords %>% as.data.frame()
+  coords['id'] = i
+  df_list[[i]] = coords
+}
+# outide the loop: vectorized function better (bind_rows)
+coords = dplyr::bind_rows(df_list) 
+coords_sf = st_as_sf(coords, coords=c("x","y"))  # It hink is crs = 4326(same as ucdb)
+
+# it seems correct
+pols_sf = coords_sf %>%
+  group_by(id) %>%
+  summarise(pol = st_combine(geometry)) %>%
+  st_cast("POLYGON")
+
+for (i in seq(length(pols_sf$pol))){
+  plot(pols_sf[i, 2], main = i)  
+}
 
 
+# pols_sf = coords_sf %>%
+#   group_by(id) %>%
+#   summarise() %>%
+#   st_cast("POLYGON") %>%
+#   st_convex_hull() st_convex_hull creates the convex hull of a set of points
+
+
+
+
+
+
+
+intersection = st_join(points_ucdb, pols_sf)
 
 
