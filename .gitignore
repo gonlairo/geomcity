@@ -1,5 +1,7 @@
 # manual
 data/*
+.DS_STORE
+
 
 # History files
 .Rhistory
