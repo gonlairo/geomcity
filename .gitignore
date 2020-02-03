@@ -1,7 +1,7 @@
 # manual
 data/*
 .DS_Store
-
+.ipynb_checkpoints
 
 # History files
 .Rhistory
