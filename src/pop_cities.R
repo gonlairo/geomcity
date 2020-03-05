@@ -1,15 +1,18 @@
 library(raster)
 library(sf)
 
-path_raster_pop = '/Users/rodrigo/Documents/tfg/cities/data/raw/ghsl/population/GHS_POP_E1990_GLOBE_R2019A_4326_9ss_V1_0/GHS_POP_E1990_GLOBE_R2019A_4326_9ss_V1_0.tif'
-path_raster_built = '/Users/rodrigo/Documents/tfg/cities/data/raw/ghsl/built-up/GHS_BUILT_LDS1990_GLOBE_R2018A_54009_1K_V2_0/GHS_BUILT_LDS1990_GLOBE_R2018A_54009_1K_V2_0.tif'
-pop_raster = raster::raster(path_raster_pop)
-built_raster = raster::raster(path_raster_built)
+path_raster_pop_1990 = '/Users/rodrigo/Documents/tfg/cities/data/raw/ghsl/population/GHS_POP_E1990_GLOBE_R2019A_4326_9ss_V1_0/GHS_POP_E1990_GLOBE_R2019A_4326_9ss_V1_0.tif'
+path_raster_built_1990 = '/Users/rodrigo/Documents/tfg/cities/data/raw/ghsl/built-up/GHS_BUILT_LDS1990_GLOBE_R2018A_54009_1K_V2_0/GHS_BUILT_LDS1990_GLOBE_R2018A_54009_1K_V2_0.tif'
+pop_raster = raster::raster(path_raster_pop_1990)
+built_raster = raster::raster(path_raster_built_1990)
+
+built_raster_latlon = raster::projectRaster(built_raster, CRS("+init=epsg:4326"))
+
 
 #projection(built_raster) = projection(pop_raster)
 #projection(pop_raster) == projection(built_raster)
 
-path_up_spain = '/Users/rodrigo/Documents/tfg/cities/data/created/shp/output/spain_metrics/spain_ShapeMetrics1.shp'
+path_up_spain = '/Users/rodrigo/Documents/tfg/cities/data/created/shp/input/spain.shp'
 up_spain = sf::st_read(path_up_spain) 
 npols = length(up_spain$geometry)
 up_spain["pop"] = 0
