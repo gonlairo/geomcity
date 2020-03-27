@@ -6,9 +6,7 @@ path_raster_built_1990 = '/Users/rodrigo/Documents/tfg/cities/data/raw/ghsl/buil
 pop_raster = raster::raster(path_raster_pop_1990)
 built_raster = raster::raster(path_raster_built_1990)
 
-built_raster_latlon = raster::projectRaster(built_raster, CRS("+init=epsg:4326"))
-
-
+built_raster_latlon = raster::projectRaster(built_raster, crs = CRS("+init=epsg:4326"))
 #projection(built_raster) = projection(pop_raster)
 #projection(pop_raster) == projection(built_raster)
 
