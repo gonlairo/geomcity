@@ -66,23 +66,3 @@ id_intersect = sf::st_intersects(buffer_sf_planar, small_polys_planar)
 
 
 
-lonlat2UTM = function(lonlat) {
-  utm = (floor((lonlat[1] + 180) / 6) %% 60) + 1
-  if(lonlat[2] > 0) {
-    utm + 32600
-  } else{
-    utm + 32700
-  }
-}
-
-shp = st_read('/Users/rodrigo/Documents/tfg/cities/data/created/raster/spain/spain_1992_small.shp')
-epsg_utm_lnd = lonlat2UTM(st_coordinates(shp))
-
-
-new = st_transform(shp, 32729)
-plot(new)
-st_write(new, dsn = '/Users/rodrigo/Documents/tfg/cities/data/created/raster/reprojected.shp')
-
-
-
-

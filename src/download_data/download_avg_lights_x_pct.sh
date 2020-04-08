@@ -20,27 +20,25 @@ cd tar-files
 # Download each file from:
 # "Average Visible, Stable Lights, & Cloud Free Coverages."
 wget -A "*.tgz" -m -p -E -k -K -np -erobots=off \
-     https://www.ngdc.noaa.gov/eog/data/web_data/v4avg_lights_x_pct/F101992.v4b.avg_lights_x_pct.tgz
+     https://www.ngdc.noaa.gov/eog/data/web_data/v4avg_lights_x_pct/
 
-mv https://www.ngdc.noaa.gov/eog/data/web_data/v4avg_lights_x_pct/*.tgz .
+mv www.ngdc.noaa.gov/eog/data/web_data/v4avg_lights_x_pct/*.tgz .
 rm -rf www.ngdc.noaa.gov
 
 # Extract the files from the archives into a folder called gzfiles:
 
-# create folder called gz-files
-if ! [ -d ../gz-files]; then
-        mkdir ../gz-files
-fi #close if statement
+# create folder called gz-files if it does not exist
+#mkdir ../gz-files
 
 # extract tgz files
-for f in *.tgz; do tar -xvf $f -C ../gz-files; done
+#for f in *.tgz; do tar -xvf $f -C ../gz-files; done
 
 # Delete the .tar files
-rm -f *.tgz
+#rm -f *.tgz
 
 # Extract the .gz files:
-cd ../gz-files
-#gunzip *web.stable_lights.avg_vis.tif.gz -f
+#cd ../gz-files
+#gunzip *avg_lights_x_pct.tif.gz -f
 
 # Put all the tif and tfw files into a separate folder:
 #mv *.tif ../

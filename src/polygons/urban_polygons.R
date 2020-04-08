@@ -8,15 +8,15 @@ urban_polygons = function(rlights, shapefile, light_threshold,
   # urban_polygons computes the polygons geometries based on a light DN threshold 
   # as well as the amount of light and the population for each polygon.
   #
-  # Arguments:
-  #   @rlights: raster of satellite images at night (.tif)
-  #   @shapefile: shp to mask rlights (.shp)
-  #   @light_threshold: threshold that defines what a city is (numeric)
-  #   @calculate_lights: computes the amount of light in each polygon (bool)
-  #   @calculate_population: computes the amount of populaton in each polygon (bool)
+  # Inputs:
+  #   @rlights (.tif or RasterLayer): raster of satellite images at night 
+  #   @shapefile (.shp or sf Dataframe): shapefile to mask rlights 
+  #   @light_threshold (numeric): threshold that defines what a city is 
+  #   @calculate_lights (bool): computes the amount of light in each polygon 
+  #   @calculate_population (bool): computes the amount of populaton in each polygon 
   #
-  # output: .shp file with the polygons geometry and the population and 
-  #         amount of light if requested.
+  # Output (.shp): file with the polygons geometry and the population 
+  #                and amount of light if requested.
   # 
   
   
@@ -26,13 +26,23 @@ urban_polygons = function(rlights, shapefile, light_threshold,
   require(dplyr)
   
   # reading raster and shapefile
-  shapefile = sf::st_read(shapefile)
-  rlights = raster::raster(rlights)
+  
+  if (!is(shapefile, "sf")){
+    shapefile = sf::st_read(shapefile)  
+  } else{
+    shapefile = shapefile
+  }
+  
+  if (!is(rlights, "RasterLayer")){
+    rlights = raster::raster(rlights)  
+  } else{
+    rlights = rlights
+  }
+  
   
   # get the right shape
   crop = raster::crop(rlights, shapefile)  # crop: rectangle
   mask = raster::mask(crop, shapefile)    # mask: shapefile shape
-  plot(mask)
   
   #if(light_threshold > 6300 | light_threshold < 0) stop("threshold out of bounds")
 
@@ -40,6 +50,7 @@ urban_polygons = function(rlights, shapefile, light_threshold,
   rbinary = raster::calc(mask, fun = function(x) {ifelse(x > light_threshold, 1 , NA)})
   
   # polygon extraction
+  print('-- CREATING POLYGONS --')
   urban_polygons = raster::rasterToPolygons(rbinary, n = 4,
                                             na.rm = TRUE, dissolve = TRUE)
   
@@ -81,6 +92,8 @@ urban_polygons = function(rlights, shapefile, light_threshold,
   if(calculate_population) round(sf_urban_polygons$pop, 2)
   
   # write output shapefile
+  if (!dir.exists(output_directory)) dir.create(output_directory)
+    
   output = paste(output_directory, file_name, sep = '')
   st_write(sf_urban_polygons, dsn = output, delete_layer = TRUE)
 

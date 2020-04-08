@@ -1,26 +1,25 @@
-clear
-clc
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+function deblur_ntl_image(output_folder, num_cpus, whole_image, blurred_image_pathname, blurred_image_perc_pathname, deblurred_image_pathname)
+
+
 %PARAMETERS:
-output_folder = '/Users/rodrigo/Documents/tfg/cities/data/created/deblur'; %change to appropriate working directory
-num_cpus = 6;                    % set number of CPUs for parallel processing
-whole_image = 0;                 % deblur whole image on one CPU with whole_image=1. deblur image using multiple CPUs in parallel with whole_image=0; note that the borders of the image may not be blurred depending on window size
-freq_filter = 1;                 % default value: 1. this variable decides if frequency filtering should occur. set to zero if undesired.
-threshold=20.0;                  % minimum percentage of cloud-free nights permissible; all pixels with lower frequency are set to zero
-use_default_noise_sig_ratio = 1; %set to 1 to use default noise-to-signal ratio for deconvolution (see block_deblur.m); set to zero to calculate ratio locally (not recommended for parallelized roving window deblurring)
+% output_folder               % change to appropriate working directory
+% num_cpus                    % set number of CPUs for parallel processing
+% whole_image                 % deblur whole image on one CPU with whole_image=1. deblur image using multiple CPUs in parallel with whole_image=0; note that the borders of the image may not be blurred depending on window size
+% freq_filter                 % default value: 1. this variable decides if frequency filtering should occur. set to zero if undesired.
+% threshold                   % minimum percentage of cloud-free nights permissible; all pixels with lower frequency are set to zero
+% use_default_noise_sig_ratio % set to 1 to use default noise-to-signal ratio for deconvolution (see block_deblur.m); set to zero to calculate ratio locally (not recommended for parallelized roving window deblurring)
+% blurred_image_pathname          % avg_vis image
+% blurred_image_perc_pathname     % pct image
+% deblurred_image_pathname        % name of the deblurred image to be produced by this script
 
-blurred_image_pathname = strcat(output_folder, '/', 'blurred_image.tif')                        %avg_vis image
-blurred_image_perc_pathname = strcat(output_folder, '/', 'pct_raster_for_blurred_image.tif')    %pct image
-deblurred_image_pathname = strcat(output_folder, '/', 'deblurred_image_name.tif');              %name of the deblurred image to be produced by this script
+
+% default parameter (as they were given)
+threshold = 20.0;
+freq_filter = 1;
+use_default_noise_sig_ratio = 1;
 
     % NOTHING BELOW THIS LINE NEEDS TO BE CHANGED BY THE USER :-) %         
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -117,3 +116,5 @@ imagesc(deblurred_image)
 colorbar
 min(min(deblurred_image))
 max(max(deblurred_image))
+
+end

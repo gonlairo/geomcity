@@ -11,45 +11,7 @@ source('/Users/rodrigo/Documents/tfg/cities/src/urban_polygons.R')
 
 ########################################
 
-
-wshp = st_read('/Users/rodrigo/Documents/tfg/cities/data/raw/shapefiles/continent shapefile/continent.shp')
-
-# Africa
-
-africa = wshp[wshp$CONTINENT == 'Africa' ,]
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-# general approach for SPAIN
+# SPAIN
 lights.files = list.files(path = '/Users/rodrigo/Documents/tfg/cities/data/raw/Intercalibrated_NTL_RSR',
                           pattern = ".tif", recursive = TRUE, full.names = TRUE)
 
@@ -57,7 +19,7 @@ output_directory = '/Users/rodrigo/Documents/tfg/cities/data/created/raster/spai
 path_shapefile = '/Users/rodrigo/Documents/tfg/cities/data/raw/shapefiles/countries/spain.shp'
 
 start = Sys.time()
-for (file in lights.files) {
+for (file in lights.files[0:10]) {
   
   # create  file_name
   year = stringr::str_sub(file, start = -8, end = -5)
@@ -78,24 +40,8 @@ system("say Just finished motherfucker! Wake up!")
 
 
 
-### intercalibration
-source('/Users/rodrigo/Documents/tfg/cities/src/urban_polygons.R')
-path_shapefile = '/Users/rodrigo/Documents/tfg/cities/data/raw/shapefiles/countries/spain.shp'
-output_directory = '/Users/rodrigo/Documents/tfg/cities/data/created/raster/spain/'
 
-shapefile = sf::st_read(path_shapefile)
-rlights = raster::raster('/Users/rodrigo/try.tif')
-
-# get the right shape
-crop = raster::crop(rlights, shapefile)  # crop: rectangle
-mask = raster::mask(crop, shapefile)    # mask: shapefile shape
-plot(mask)
-
-urban_polygons(rlights = rlights, shapefile = path_shapefile, light_threshold = 30, 
-               calculate_population = FALSE, output_directory = output_directory,
-               file_name = inter_spain_1992)
-
-
-
+africashp %>% group_by(CODE)
+  summarise_all()
 
 
