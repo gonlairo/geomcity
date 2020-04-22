@@ -33,7 +33,6 @@ z = x[x$area > 100e+6 ,]
 y = x[x$area > 15e+6 ,]
 plot(z$geometry)
 plot(y$geometry)
-x
 
 
 
@@ -76,14 +75,6 @@ id2 = stable_small$ID2
 
 
 ### UCDB ##
-
-path_ucdb = '/Users/rodrigo/Documents/tfg/cities/data/raw/ucdb/GHS_STAT_UCDB2015MT_GLOBE_R2019A_V1_0/GHS_STAT_UCDB2015MT_GLOBE_R2019A_V1_0.shp'
-ucdb = st_read(path_ucdb)
-spain_ucdb = ucdb[ucdb$CTR_MN_NM == 'Spain' ,]
-
-x =spain_ucdb %>% 
-  st_geometry(st_point(c(GCPNT_LON, GCPNT_LAT)))
-
 
 
 
