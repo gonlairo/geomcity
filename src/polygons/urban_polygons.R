@@ -60,41 +60,42 @@ urban_polygons = function(rlights, shapefile, light_threshold,
   sf_urban_polygons = st_cast(sf_urban_polygons_geometry_cities, 'POLYGON')
   
   #sf_urban_polygons$area = round(st_area(sf_urban_polygons), 2) 
-  sf_urban_polygons$prod = NA
-  sf_urban_polygons$pop = NA
+  sf_urban_polygons$sum_lights = NA
+  #sf_urban_polygons$pop = NA
   
   npols = nrow(sf_urban_polygons)
   
   if(calculate_lights){
     for (i in 1:npols){
-      prod_clip1 = raster::crop(mask, sf_urban_polygons[i,])
-      prod_clip2 = raster::mask(prod_clip1, sf_urban_polygons[i,])
-      productivity = raster::cellStats(prod_clip2, sum)
-      sf_urban_polygons$prod[i] = productivity
+      lights_clip1 = raster::crop(mask, sf_urban_polygons[i,])
+      lights_clip2 = raster::mask(lights_clip1, sf_urban_polygons[i,])
+      lights = raster::cellStats(lights_clip2, sum)
+      sf_urban_polygons$sum_lights[i] = lights
     }
   }
   
-  if(calculate_population){
-    rpop = raster(rpop)
-    for (i in 1:npols) {
-      pop_clip1 = raster::crop(rpop, sf_urban_polygons[i,])
-      pop_clip2 = raster::mask(pop_clip1, sf_urban_polygons[i,])
-      pop = raster::cellStats(pop_clip2, sum)
-      sf_urban_polygons$pop[i] = pop
-    }
-  }
+  # if(calculate_population){
+  #   rpop = raster(rpop)
+  #   for (i in 1:npols) {
+  #     pop_clip1 = raster::crop(rpop, sf_urban_polygons[i,])
+  #     pop_clip2 = raster::mask(pop_clip1, sf_urban_polygons[i,])
+  #     pop = raster::cellStats(pop_clip2, sum)
+  #     sf_urban_polygons$pop[i] = pop
+  #   }
+  # }
   
   #remove columns that are NA
   sf_urban_polygons[, colSums(is.na(sf_urban_polygons)) != nrow(sf_urban_polygons)]
   
   # round pop and lights
-  if(calculate_lights) round(sf_urban_polygons$prod, 2)
-  if(calculate_population) round(sf_urban_polygons$pop, 2)
+  if(calculate_lights) round(sf_urban_polygons$sum_lights, 2)
+  #if(calculate_population) round(sf_urban_polygons$pop, 2)
   
   # write output shapefile
   if (!dir.exists(output_directory)) dir.create(output_directory)
     
-  output = paste(output_directory, file_name, sep = '')
+  output = paste(output_directory, file_name, sep = '/')
+  print(output)
   st_write(sf_urban_polygons, dsn = output, delete_layer = TRUE)
 
   end = Sys.time()

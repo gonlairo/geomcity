@@ -11,8 +11,8 @@ unzip '*.zip'
 gdalbuildvrt gdem.vrt *dem.tif
 
 # merge rasters into 1 file
-gdal_translate -of GTiff gdem.vrt rmerged.tif
+gdal_translate -of GTiff -co 'COMPRESS=LZW' gdem.vrt gdem_merged.tif
 
 mkdir output
-mv gdem.vrt rmerged.tif output/
+mv gdem.vrt gdem_merged.tif output/
 rm *.tif

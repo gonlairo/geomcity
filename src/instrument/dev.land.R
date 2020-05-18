@@ -15,3 +15,5 @@ developable.land = function(path_water, path_gdem, shapefile, slope_threshold)
   
   return(developable_land)
 }
+
+

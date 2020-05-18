@@ -1,5 +1,5 @@
-optimal_threshold_glob = function(shapefile, rlights, urban_layer, urban_threshold = 22, 
-                             initial_threshold, delta, step){
+optimal_threshold_hbase = function(shapefile, rlights, urban_layer, urban_threshold = 22, 
+                                  initial_threshold, delta, step){
   
   require(sf)
   require(raster)
@@ -17,7 +17,7 @@ optimal_threshold_glob = function(shapefile, rlights, urban_layer, urban_thresho
     rlights = rlights
   }
   
-   if (!is(urban_layer, "RasterLayer")){
+  if (!is(urban_layer, "RasterLayer")){
     urban_layer = raster::raster(urban_layer)  
   } else{
     urban_layer = urban_layer
@@ -41,10 +41,10 @@ optimal_threshold_glob = function(shapefile, rlights, urban_layer, urban_thresho
     # urban layer
     urban_layer_crop = raster::crop(urban_layer, country_shp)
     urban_layer_mask = raster::mask(urban_layer_crop, country_shp)        # change to >= depending on the layer
-    urban_layer_binary = raster::calc(urban_layer_mask, fun = function(x) {ifelse(x == urban_threshold, 1 , 0)})
+    urban_layer_binary = raster::calc(urban_layer_mask, fun = function(x) {ifelse(x >= urban_threshold, 1 , 0)})
     
-    plot(urban_layer_mask, main = 'urban layer mask')
-    plot(urban_layer_binary, main = 'urban layer binary with threshold')
+    #plot(urban_layer_mask, main = 'urban layer mask')
+    #plot(urban_layer_binary, main = 'urban layer binary with threshold')
     
     #print(freq(urban_layer_binary))
     
@@ -56,35 +56,20 @@ optimal_threshold_glob = function(shapefile, rlights, urban_layer, urban_thresho
       df = rbind(df, acc)
     }
     
-   colnames(df) = c('DN', 'urban_acc', 'nonurban_acc', 'average_acc')
-   rownames(df) = NULL
-   df$id = country_name
-   
-   print(country_name)
-   print(df)
-   
-   ls_dfacc[[country_name]] = df
-   print('--------------------')
+    colnames(df) = c('DN', 'urban_acc', 'nonurban_acc', 'average_acc')
+    rownames(df) = NULL
+    df$id = country_name
+    
+    print(country_name)
+    print(df)
+    
+    ls_dfacc[[country_name]] = df
+    print('--------------------')
     
   }
-  
+
   return(ls_dfacc)
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 

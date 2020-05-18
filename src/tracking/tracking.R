@@ -1,7 +1,7 @@
 library(sf)
 library(raster)
 library(dplyr)
-
+library(ggplot2)
 
 ## INTERSECTION BTW POINTS AND POLYGONS ##
 # Goal: have a shapefile with polygons with a name
@@ -9,100 +9,14 @@ library(dplyr)
 
 #checks: 
 # - if point is close to a polygon I need to allow it i guess (islands and costal cities)
-PolygonPointsInfo = function(IntersectionIDs, CityPoints){
-  lnames = list()
-  MissingPolygons = c()
-  
-  for (i in 1:nrow(IntersectionIDs)) {
-    IDs = IntersectionIDs[[i]]
-    VectorNames = c()
-    for (id in IDs) {
-      names = CityPoints[id, c('Name1', 'Admnm1')] %>% st_drop_geometry()
-      rownames(names) = NULL
-      CityName = as.character(names[1, 'Name1'])
-      RegionName = as.character(names[1, 'Admin1'])
-      VectorNames = c(VectorNames, CityName)
-    }
-    key = paste0('polygon_', as.character(i))
-    if(length(IDs) > 0){
-      lnames[[key]] = VectorNames
-    } else{
-      lnames[[key]] = '0'
-      MissingPolygons = c(MissingPolygons, i)
-    }
- }
-
-  print(paste('Missing Polygons:', length(MissingPolygons)))
-  return(lnames)
-}
- 
-
-cities = st_read('/Users/rodrigo/Documents/tfg/cities/data/raw/citieShp/grump-v1-settlement-points-rev01-shp/global_settlement_points_v1.01.shp')
-spain_points = cities[cities$Country == 'Spain' ,]
-spain_points = st_transform(spain_points, 25830)
-pol_files = list.files(path = '/Users/rodrigo/Documents/tfg/cities/data/created/shp/spain',
-                       pattern = ".shp", recursive = TRUE, full.names = TRUE)
-
-lyears = list()
-for (file in pol_files) {
-  
-  up = st_read(file) %>% 
-    filter(area > 50e+06) %>% 
-    sf::st_transform(25830)
-  
-  Intersection = st_intersects(up, spain_points)
-  info = PolygonPointsInfo(IntersectionIDs = Intersection,
-                           CityPoints = spain_points)
-  year = stringr::str_sub(file, start = -8, end = -5)
-  lyears[[year]] = info
-}
-
-
-
+# plot(spain_ucdb)
+# st_write(spain_ucdb, dsn = '/Users/rodrigo/Documents/tfg/cities/data/created/shp/ucdb_points.shp', update  = T)
 
 ######################
-# UCDB #
+     # UCDB #
 ######################
 
-PolygonPointsInfoUCDB = function(IntersectionIDs, CityPoints, maxpop){
-  lnames = list()
-  MissingPolygons = c()
-  
-  for (i in 1:nrow(IntersectionIDs)) {
-    IDs = IntersectionIDs[[i]]
-    VectorNames = c()
-    
-    for (id in IDs) {
-      names = CityPoints[id, c('UC_NM_MN', 'P00')] %>% st_drop_geometry()
-      rownames(names) = NULL
-      CityName = as.character(names[1, 'UC_NM_MN'])
-      VectorNames = c(VectorNames, CityName) #append cityname to vector
-      
-      max = 0
-      maxid = id
-      if (names$P00 > max){
-        max = names$P00
-        maxid = id
-      }
-    }
-    
-    if(maxpop == TRUE & length(IDs) > 0){
-      CityName = CityPoints[maxid, 'UC_NM_MN'] %>% st_drop_geometry()
-      VectorNames = as.character(names[1, 'UC_NM_MN'])
-    }
-    
-    key = paste0('polygon_', as.character(i))
-    if(length(IDs) > 0){
-      lnames[[key]] = VectorNames
-    } else{
-      lnames[[key]] = '0'
-      MissingPolygons = c(MissingPolygons, i)
-    }
-  }
-  return(lnames)
-}
-
-path_ucdb = '/Users/rodrigo/Documents/tfg/cities/data/raw/ucdb/GHS_STAT_UCDB2015MT_GLOBE_R2019A_V1_0/GHS_STAT_UCDB2015MT_GLOBE_R2019A_V1_0.shp'
+path_ucdb = '/Users/rodrigo/Documents/tfg/data/raw/ucdb/GHS_STAT_UCDB2015MT_GLOBE_R2019A_V1_0/GHS_STAT_UCDB2015MT_GLOBE_R2019A_V1_0.shp'
 ucdb = st_read(path_ucdb)
 
 spain_ucdb = ucdb %>%
@@ -112,17 +26,16 @@ spain_ucdb = ucdb %>%
   st_as_sf(coords = c("GCPNT_LON", "GCPNT_LAT"), crs = 4326) %>%
   st_transform(25830)
 
+# create lyearsUCDB (list of years with polygons associated with them and the names)
+source('PolygonPointsInfoUCDB.R')
 
-# plot(spain_ucdb)
-# st_write(spain_ucdb, dsn = '/Users/rodrigo/Documents/tfg/cities/data/created/shp/ucdb_points.shp', update  = T)
-
-pol_files = list.files(path = '/Users/rodrigo/Documents/tfg/cities/data/created/shp/spain',
+pol_files = list.files(path = '/Users/rodrigo/Documents/tfg/data/created/shp/spain',
                        pattern = ".shp", recursive = TRUE, full.names = TRUE)
 lyearsUCDB = list()
 for (file in pol_files) {
   
   up = st_read(file) %>% 
-    #filter(area > 50e+06) %>% 
+    filter(area > 50e+06) %>% 
     sf::st_transform(25830)
   
   up_buffer = st_buffer(up, dist = 2000)
@@ -135,33 +48,77 @@ for (file in pol_files) {
 }
 
 
-## check if names coincide in time
+#############################################################################
+#############################################################################
+
 # common cities across all years (40 in Spain)
 # https://stackoverflow.com/questions/3695677/how-to-find-common-elements-from-multiple-vectors
+common = Reduce(intersect, lyearsUCDB)
+common[[1]] = NULL # remove NA as common name
 
-common = Reduce(intersect, list(as.character(lyearsUCDB[[1]]), as.character(lyearsUCDB[[2]]),
-                       as.character(lyearsUCDB[[3]]), as.character(lyearsUCDB[[4]]),
-                       as.character(lyearsUCDB[[5]]), as.character(lyearsUCDB[[6]]),
-                       as.character(lyearsUCDB[[7]]), as.character(lyearsUCDB[[8]]),
-                       as.character(lyearsUCDB[[7]]), as.character(lyearsUCDB[[8]])))
-
-
-
-# match names with up polygons
-indexes = match(common,as.character(lyearsUCDB[[1]]))
-
-# do this for each year and then create time series with the up polygons dastaset
-
-# create shape of 'mis datos' PANEL DATA SET UP
-
-
-
-
-
-
-
-
-
-
-
+df = NULL
+for (i in 1:length(pol_files)) {
+  file = pol_files[i]
   
+  up = st_read(file) %>% 
+    filter(area > 50e+06)
+  
+  indexes = match(common, lyearsUCDB[[i]])
+  
+   #one way
+   newup = up[indexes ,]
+   newup$id = 1:length(common)
+   
+   year = stringr::str_sub(file, start = -8, end = -5)
+   newup$year = year
+   
+   #st_write(newup, paste0('/Users/rodrigo/Documents/tfg/data/created/shp/', year, 'fspain.shp'))
+   df = rbind(df, newup)
+}
+
+df$pop = NULL
+df$area = df$area/1e+06
+
+
+#############################################################################
+#############################################################################
+
+# problems with polygons that change area more than 30% in a year
+df_idyear =df %>% st_drop_geometry() %>% 
+  group_by(id, year) %>% 
+  summarise_all(sum)
+
+for (i in seq(0, 320, 8)) {
+  x = df_idyear[i:(i + 8), ]
+  print(x)
+  break
+}
+
+
+ggplot(df, aes(x = year, y = area, group = id, color = id)) +
+  geom_line() + 
+  xlab("")
+
+# individual
+x = df[df$id == 1, c('area', 'year')]
+ts.plot(x$area)
+
+
+
+# I NEED TO CONSIDER MULTIPOLYGONS AND JOIN THEM TOGETHER OR SOMETHING.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

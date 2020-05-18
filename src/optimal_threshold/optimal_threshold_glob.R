@@ -43,8 +43,9 @@ optimal_threshold_glob = function(shapefile, rlights, urban_layer, urban_thresho
     urban_layer_mask = raster::mask(urban_layer_crop, country_shp)        # change to >= depending on the layer
     urban_layer_binary = raster::calc(urban_layer_mask, fun = function(x) {ifelse(x == urban_threshold, 1 , 0)})
     
-    plot(urban_layer_mask, main = 'urban layer mask')
-    plot(urban_layer_binary, main = 'urban layer binary with threshold')
+    
+    #plot(urban_layer_mask, main = 'urban layer mask')
+    #plot(urban_layer_binary, main = 'urban layer binary with threshold')
     
     #print(freq(urban_layer_binary))
     
@@ -56,7 +57,7 @@ optimal_threshold_glob = function(shapefile, rlights, urban_layer, urban_thresho
       df = rbind(df, acc)
     }
     
-   colnames(df) = c('DN', 'urban_acc', 'nonurban_acc', 'average_acc')
+   colnames(df) = c('DN','nup', 'nnup', 'upcc', 'nupcc', '10s', '20s', 'urban_acc', 'nonurban_acc', 'average_acc')   
    rownames(df) = NULL
    df$id = country_name
    
