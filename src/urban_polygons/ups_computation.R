@@ -1,27 +1,27 @@
+setwd('/Users/rodrigo/Documents/tfg')
 library(stringr)
 library(dplyr)
 library(raster)
 library(sf)
 
-source('/Users/rodrigo/Documents/tfg/src/polygons/urban_polygons.R')
-path_shapefile = '/Users/rodrigo/Documents/tfg/data/ups/finalshp.shp'
+source('src/urban_polygons/urban_polygons.R')
+path_shapefile = 'data/shp/shp_AA_final.shp'
 
-shapefile = st_read(path_shapefile)[67:81 , ]
-ntl.files = list.files(path = '/Users/rodrigo/Documents/tfg/data/raster/final',
+shapefile = st_read(path_shapefile)
+ntl.files = list.files(path = 'data/raster/final',
                        pattern = ".tif", full.names = TRUE)
 
 
-
-for (i in 1:nrow(shapefile)) {
+for (i in 66:81) {
   country_shp = shapefile[i ,]
   NAME = as.character(country_shp$cntry_x)
-  THRESHOLD = country_shp$optm_th
+  THRESHOLD = country_shp$lower_thr
   
   print(NAME)
   print(THRESHOLD)
   
   # change the output direcory to have one folder per country
-  output_directory = paste0('/Users/rodrigo/Documents/tfg/data/ups/asia_africa/', NAME)
+  output_directory = paste0('data/ups/asia_africa/lower_bound_threshold/', NAME)
   
   for (ntl.raster in ntl.files) {
 
@@ -32,11 +32,37 @@ for (i in 1:nrow(shapefile)) {
 
     #function call
     urban_polygons(rlights = ntl.raster, shapefile = country_shp, light_threshold = THRESHOLD,
-                  calculate_population = FALSE, output_directory = output_directory,
-                  file_name = file_name)
+                   output_directory = output_directory,
+                   file_name = file_name)
+  
   }
 }
 
+for (i in 1:nrow(shapefile)) {
+  country_shp = shapefile[i ,]
+  NAME = as.character(country_shp$cntry_x)
+  THRESHOLD = country_shp$upper_thr
+  
+  print(NAME)
+  print(THRESHOLD)
+  
+  # change the output direcory to have one folder per country
+  output_directory = paste0('data/ups/asia_africa/upper_bound_threshold/', NAME)
+  
+  for (ntl.raster in ntl.files) {
+    
+    # create  file_name
+    year = stringr::str_sub(ntl.raster, start = -8, end = -5)
+    file_name = paste(NAME, paste0(year, '.shp'), sep = "_")
+    print(file_name)
+    
+    #function call
+    urban_polygons(rlights = ntl.raster, shapefile = country_shp, light_threshold = THRESHOLD,
+                   output_directory = output_directory,
+                   file_name = file_name)
+    
+  }
+}
 
 #####################
 ## PARALELLZATION ## 
@@ -59,7 +85,7 @@ for (i in 1:nrow(shapefile)) {
   THRESHOLD = 100 #country_shp$optim_threshold
   
   
-  output_directory = '/Users/rodrigo/Documents/tfg/data/created/shp/asia_africa/,msdfgn'
+  output_directory = '/data/created/shp/asia_africa/change this'
   
   foreach(i=1:length(ntl.files)) %dopar% {
     

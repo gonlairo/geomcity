@@ -37,8 +37,8 @@ st_write(AsiaAfricaShp, dsn = '/Users/rodrigo/Documents/tfg/data/raw/shapefiles/
 
 # Add "optimal" thresholds
 
-shp = sf::st_read('/Users/rodrigo/Documents/tfg/data/data-raw/shapefiles/continents/AsiaAfricaShp.shp')
-ot = read.csv('/Users/rodrigo/Documents/tfg/data/thresholds/final.csv')
+shp = sf::st_read('/Users/rodrigo/Documents/tfg/data/data-raw/shapefiles/continents/final_threshold.shp')
+ot = read.csv('/Users/rodrigo/Documents/tfg/data/thresholds/final_thresholds.csv')
 
 shp$optim_threshold = ot$optim_threshold
 shp$weird = ot$weird
@@ -46,4 +46,16 @@ shp$comnt = ot$comments
 shp$why = ot$why
 
 sf::st_write(shp, dsn = '//Users/rodrigo/Documents/tfg/data/shp/finalshp.shp', delete_layer = TRUE )
+
+# next iteration
+
+
+# Add "optimal" thresholds
+
+shp = sf::st_read('/Users/rodrigo/Documents/tfg/data/shp/finalshp.shp')
+ot = read.csv('/Users/rodrigo/Documents/tfg/data/thresholds/final_thresholds.csv')
+
+shp$lower_thr = ot$lower_bound_threshold
+shp$upper_thr = ot$upper_bound_threshold
+sf::st_write(shp, dsn = '/Users/rodrigo/Documents/tfg/data/shp/shp_AF_final.shp', delete_layer = TRUE )
 

@@ -1,12 +1,12 @@
+setwd('/Users/rodrigo/Documents/tfg')
 library(raster)
 library(sf)
 library(dplyr)
 library(stringr)
-source('/Users/rodrigo/Documents/tfg/src/tracking/PolygonPointsInfoUCDB.R')
+source('src/tracking/PolygonPointsInfoUCDB.R')
 
-#################################################
-path_urban_layer = '/Users/rodrigo/Documents/tfg/data/data-raw/GHSL/ucdb/GHS_STAT_UCDB2015MT_GLOBE_R2019A_V1_0/GHS_STAT_UCDB2015MT_GLOBE_R2019A_V1_0.shp'
-ul = st_read(path_urban_layer)
+path_urban_layer = 'data/data-raw/GHSL/ucdb/GHS_STAT_UCDB2015MT_GLOBE_R2019A_V1_0/GHS_STAT_UCDB2015MT_GLOBE_R2019A_V1_0.shp'
+ul = st_read(path_urban_layer) # CRS: 4326
 
 ul = ul %>%
   dplyr::select(GCPNT_LON, GCPNT_LAT, UC_NM_MN, P90, P00, P15) %>%
@@ -15,11 +15,9 @@ ul = ul %>%
   st_transform(25830) ######## CHANGE THIS TO A WORLD PROJECTION, NOT A SPAIN UTM PROJECTION
 
 
-path = '/Users/rodrigo/Documents/tfg/data/ups/asia_africa'
+path = 'data/ups/asia_africa'
 dirs = list.dirs(path) # dirs = countries 
 dirs = dirs[-1]        # remove asia_africa directory
-
-
 
 df = NULL
 id_start = 1
@@ -69,7 +67,7 @@ for (d in 1:length(dirs)) {
     if(!length(common)) {
       print(country_name)
       break
-     }
+    }
     
      up = st_read(pol_files[j], quiet = TRUE) 
      

@@ -7,7 +7,9 @@ library(stringr)
 # 2: model of city expansion: compute the radius 
 # 3: potential footprint: largest contiguous patch of developable land
 
-# 1 COMPUTE DEVELOPABLE LAND #
+#######################################################
+################# DEVELOPABLE LAND ###################
+#######################################################
 
 path_gdem = '/Users/rodrigo/Documents/tfg/data/data-raw/ASTER/gdem_v3/africa-asia/output/slope_gdem_mercator.tif'
 path_water = '/Users/rodrigo/Documents/tfg/data/data-raw/ASTER/water_v1/africa-asia/output/output_water_mercator.tif'
@@ -22,8 +24,10 @@ developable_land = raster::overlay(stack,
 writeRaster(developable_land, filename = '/Users/rodrigo/Documents/tfg/data/raster/dev.land/africa_asia_20.tif')
 
 
+#######################################################
+############# MODEL OF CITY EXPANSION #################
+#######################################################
 
-# 2 MODEL OF CITY EXPANSION #
 # Two approaches: section 5.1 and appendix B.E
 # if the city’s population continued to grow as it did between 1975 and 1990 and population density
 # remained constant at its 1990 level, what would be the area occupied by the city in year t? 
@@ -34,7 +38,7 @@ path_country_codes = '/Users/rodrigo/Documents/tfg/data/data-raw/shapefiles/asia
 ucdb = st_read(path_ucdb)
 country_codes = read.csv(path_country_codes)
 
-ups = st_read('/Users/rodrigo/Documents/tfg/data/ups/all_citynames.shp') %>%
+ups = st_read('/Users/rodrigo/Documents/tfg/data/ups/ups_4326.shp') %>%
   filter(!str_detect(city, 'N/A')) %>%
   mutate(area = as.numeric(st_area(geometry))*1e-6)
 
@@ -85,9 +89,6 @@ final$city = as.factor(final$city)
 final = final[!final$pop == Inf ,]        # 3 cities
 final = final[!final$density90 == Inf, ]  # 1 city
 
-########################################################################################
-########################################################################################
-
 # FIRST APPROACH
 # ln(area c,t) = alpha * log(pop_proj c,t) + beta * density1990 + fixed effects time + error c,t
 fit = lm(formula = log(area) ~ log(pop) + log(density90) + year - 1, data = final)
@@ -105,7 +106,6 @@ final$radius = radius
 
 # SECOND APPOACH
 #log(area c,t) = fiexed effects city + fixed effects time + error c,t
-
 fit2 = lm(formula = log(area) ~ city + year -1, data = final)
 
 summary(fit2)
@@ -120,9 +120,11 @@ final$radius2 = radius2
 final$id.y = NULL
 st_write(final, "/Users/rodrigo/Documents/tfg/data/ups/all_radius.shp")
 
-# 3 POTENTIAL FOOTPRINT #
+#######################################################
+#############  POTENTIAL FOOTPRINTS ##################
+#######################################################
 
-# radius = 1992 = 0
+# radius of 1992 = 0
 
 path_dev.land = '/Users/rodrigo/Documents/tfg/data/raster/dev.land/africa_asia_15.tif'
 path_ups      = '/Users/rodrigo/Documents/tfg/data/ups/all_radius.shp'

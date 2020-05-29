@@ -1,8 +1,13 @@
 # manual
 papers/*
 data/*
+output/*
 .DS_Store
 .ipynb_checkpoints
+
+# binary files
+src/shapemetrics/build/*
+src/shapemetrics/*.so
 
 # History files
 .Rhistory
