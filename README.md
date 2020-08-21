@@ -10,9 +10,8 @@ src:
 - tracking/
 
 ![alt text](https://github.com/gonlairo/tfg/blob/master/src/citypoints%20_noNAF.png)
-STEPS:
 
-1. PREPROCESSING:
+**PREPROCESSING:**
 
 NTL images -> intercalibration -> intra-anual composition -> inter-anual series correction
 
@@ -22,13 +21,13 @@ NTL images -> intercalibration -> intra-anual composition -> inter-anual series 
 
 At the end I get final/ which are the average images between backward and forward.
 
-2. OPTIMAL THRESHOLDS
+**OPTIMAL THRESHOLDS**
 
 I tried to use the histogram analysis that I saw in the world bank paper but it didnt work that well so I went country by country and I manually assess which threshold made more sense. Therefore src/optimal_threshold is a mess.
 
 Result: data/thresholds/final_thresholds.csv. In this directory there are lower bound (25% less) and upper bounds (25 % more).
 
-3. URBAN POLYGONS
+**URBAN POLYGONS**
 
 Given the "optimal" threshold, I create the urban polygons for each of the years availabe of NTL satellite images (ups_computation.R), which uses the function urban_polygon.R. I create a folder for each country and inside that folder one file per NTL image available. In other words,  81(countries)\*21(years) = 1701 files. They are located in data/ups/asia_africa/
 
@@ -39,7 +38,7 @@ Given the "optimal" threshold, I create the urban polygons for each of the years
 
 Result: data/final/finalups3395.gpkg, finalups4326.gpkg, finalups_noNAF_3395.gpkg (no north africa)
 
-5. INSTRUMENT
+**INSTRUMENT**
 
 - developable land (africa_asia15.tif)
 
@@ -68,7 +67,7 @@ There are two ways of calulating the "projected" radius we need to calculate lat
 
 First we need to compute the the concentric circles (model of city expansion) with the radius calculate in the step before. Once we have those we need to crop & mask them with developable land to create the "potential footprint". The result would be a shapefile where the geometry column are polygons which represent the potential footprint throughout time for each city.
 
-6. SHAPEMETRICS (independent variable and instrument)
+**SHAPEMETRICS** (independent variable and instrument)
 
 We decided to only work with single part polygons. To compute shapemetrics I am using the code from ShapeMetrics people (look them up -- email). I am using their code from python without using arcgis.
 
@@ -88,11 +87,11 @@ Steps:
 - setup.py
 - intrerpointDistance.pyx
 
-7. MODELS
+**MODELS**
 
-models/graphs.R
-models/iv.R
-models/ivqr.R
+- models/graphs.R
+- models/iv.R
+- models/ivqr.R
 
 I used plm package to deal with panel data.
 
