@@ -12,12 +12,11 @@ ul = ul %>%
   dplyr::select(GCPNT_LON, GCPNT_LAT, UC_NM_MN, P90, P00, P15) %>%
   st_drop_geometry() %>%
   st_as_sf(coords = c("GCPNT_LON", "GCPNT_LAT"), crs = 4326) %>%
-  st_transform(25830) ######## CHANGE THIS TO A WORLD PROJECTION, NOT A SPAIN UTM PROJECTION
+  st_transform(3395) 
 
 
-path = 'data/ups/asia_africa'
-dirs = list.dirs(path) # dirs = countries 
-dirs = dirs[-1]        # remove asia_africa directory
+path = 'data/ups/asia_africa/optimal_threshold'
+dirs = list.dirs(path, recursive = FALSE) # dirs = countries 
 
 df = NULL
 id_start = 1
@@ -34,9 +33,8 @@ for (d in 1:length(dirs)) {
   
   for (i in 1:length(pol_files)) {
     
-    # why do i do this? # why I do change the projection?
     up = st_read(pol_files[i], quiet = TRUE) %>% 
-      st_transform(25830) ######## CHANGE THIS TO A WORLD PROJECTION, NOT A SPAIN UTM PROJECTION
+      st_transform(3395) # change projection for buffer
     
     up_buffer = st_buffer(up, dist = 3000)
     Intersection = st_intersects(up_buffer, ul)
@@ -46,8 +44,6 @@ for (d in 1:length(dirs)) {
     year = stringr::str_sub(pol_files[i], start = -8, end = -5)
     lyearsUCDB[[year]] = info
   }
-  
-  
   
   ###########################
   # Common names of citites #
@@ -95,4 +91,6 @@ for (d in 1:length(dirs)) {
 df_ordered = dplyr::arrange(df)
 df_ordered = df_ordered[order(df_ordered$id) , ] # %>% st_transform(4326)
 df_ordered$city = unlist(df_ordered$city)
-st_write(df_ordered, dsn = '/Users/rodrigo/Documents/tfg/data/ups/all_citynames.shp')
+st_write(df_ordered, dsn = '/Users/rodrigo/Documents/tfg/data/ups/track_other/ups_4326.gpkg')
+df_ordered_3395 = df_ordered %>% st_transform(3395)
+st_write(df_ordered, dsn = '/Users/rodrigo/Documents/tfg/data/ups/track_other/ups_3395.gpkg')

@@ -30,11 +30,7 @@ def ConvertToGridPnts(ShpGeom):
     while Y >= minY:
 
         # get range of X values within which lie the inside of feature...
-        start = time.time()
         rangeLst = bounds(ShpGeom,Y)
-        end = time.time()
-        diff = end - start
-        totalbound += diff
 
         # set X to leftmost column
         X = minX
@@ -55,7 +51,6 @@ def ConvertToGridPnts(ShpGeom):
 
         # Y coordinate for next row...
         Y -= cellsize
-    print("bound time", totalbound)
 
     return featPntLst
 
@@ -144,12 +139,22 @@ cpdef float interpointDistance(list ptList): # requires list of XY coordinates o
     return avgD
 
 def proximity(featPntLst,centerX,centerY,r):
+    
+    cdef float X
+    cdef float Y
+    cdef float Xc
+    cdef float Yc
+    cdef float d
+    cdef float sumD
+    cdef float D_to_Center
+    
 
     Xc,Yc = centerX, centerY
 
     sumD = inPix = 0    # sum of distances
 
     # for each feature point...
+
     for X,Y in featPntLst:
 
         # distance to center...
@@ -167,8 +172,16 @@ def proximity(featPntLst,centerX,centerY,r):
     return D_to_Center, inPix
 
 def spin(XYLst,centroidX, centroidY):
-
-    # XY coordiantes of shape centroid...
+    
+    cdef float Xc
+    cdef float Yc
+    cdef list pt
+    cdef float X
+    cdef float Y
+    cdef float dsqr
+    cdef float sum_dsqr
+    cdef int cnt
+    
     Xc, Yc = centroidX, centroidY
 
     # sum of distance squared...

@@ -6,13 +6,14 @@
 # if the city’s population continued to grow as it did between 1975 and 1990 and population density
 # remained constant at its 1990 level, what would be the area occupied by the city in year t? 
 
-path_ucdb = '/Users/rodrigo/Documents/tfg/data/data-raw/GHSL/ucdb/GHS_STAT_UCDB2015MT_GLOBE_R2019A_V1_0/GHS_STAT_UCDB2015MT_GLOBE_R2019A_V1_0.shp'
-path_country_codes = '/Users/rodrigo/Documents/tfg/data/data-raw/shapefiles/asia_africa.csv'
+setwd('/Users/rodrigo/Documents/tfg')
+path_ucdb = 'data/data-raw/GHSL/ucdb/GHS_STAT_UCDB2015MT_GLOBE_R2019A_V1_0/GHS_STAT_UCDB2015MT_GLOBE_R2019A_V1_0.shp'
+path_country_codes = 'data/data-raw/shapefiles/asia_africa.csv'
 
 ucdb = st_read(path_ucdb)
 country_codes = read.csv(path_country_codes)
 
-ups = st_read('/Users/rodrigo/Documents/tfg/data/ups/ups_4326.shp') %>%
+ups = st_read('/Users/rodrigo/Documents/tfg/data/ups/ups_4326.gpkg') %>%
   filter(!str_detect(city, 'N/A')) %>%
   mutate(area = as.numeric(st_area(geometry))*1e-6)
 
@@ -63,6 +64,10 @@ final$city = as.factor(final$city)
 final = final[!final$pop == Inf ,]        # 3 cities
 final = final[!final$density90 == Inf, ]  # 1 city
 
+
+#####################################################################
+#####################################################################
+
 # FIRST APPROACH
 # ln(area c,t) = alpha * log(pop_proj c,t) + beta * density1990 + fixed effects time + error c,t
 fit = lm(formula = log(area) ~ log(pop) + log(density90) + year - 1, data = final)
@@ -76,7 +81,6 @@ se    = summary(fit)$sigma      # se of the fit
 # get the radius: sqrt( predicted area / pi)
 radius = sqrt(pred / pi)
 final$radius = radius
-
 
 # SECOND APPOACH
 #log(area c,t) = fiexed effects city + fixed effects time + error c,t

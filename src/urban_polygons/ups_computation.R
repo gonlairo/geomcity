@@ -8,20 +8,22 @@ source('src/urban_polygons/urban_polygons.R')
 path_shapefile = 'data/shp/shp_AA_final.shp'
 
 shapefile = st_read(path_shapefile)
-ntl.files = list.files(path = 'data/raster/final',
+
+ntl.files = list.files(path = 'data/raster/temporal_adjusted/oneway', # ADJUSTED ONE WAY
                        pattern = ".tif", full.names = TRUE)
 
 
-for (i in 66:81) {
+# OPTIMAL THRESHOLD
+for (i in 1:nrow(shapefile)) {
   country_shp = shapefile[i ,]
   NAME = as.character(country_shp$cntry_x)
-  THRESHOLD = country_shp$lower_thr
+  THRESHOLD = country_shp$optm_th
   
   print(NAME)
   print(THRESHOLD)
   
   # change the output direcory to have one folder per country
-  output_directory = paste0('data/ups/asia_africa/lower_bound_threshold/', NAME)
+  output_directory = paste0("data/ups/asia_africa/one_way/optimal_threshold/", NAME)
   
   for (ntl.raster in ntl.files) {
 
@@ -38,16 +40,17 @@ for (i in 66:81) {
   }
 }
 
+# LOWER THRESHOLD
 for (i in 1:nrow(shapefile)) {
   country_shp = shapefile[i ,]
   NAME = as.character(country_shp$cntry_x)
-  THRESHOLD = country_shp$upper_thr
+  THRESHOLD = country_shp$lower_thr
   
   print(NAME)
   print(THRESHOLD)
   
   # change the output direcory to have one folder per country
-  output_directory = paste0('data/ups/asia_africa/upper_bound_threshold/', NAME)
+  output_directory = paste0("data/ups/asia_africa/one_way/lower_threshold/", NAME)
   
   for (ntl.raster in ntl.files) {
     
@@ -61,6 +64,32 @@ for (i in 1:nrow(shapefile)) {
                    output_directory = output_directory,
                    file_name = file_name)
     
+  }
+}
+
+# UPPER THRESHOLD
+for (i in 1:nrow(shapefile)) {
+  country_shp = shapefile[i ,]
+  NAME = as.character(country_shp$cntry_x)
+  THRESHOLD = country_shp$upper_thr
+  
+  print(NAME)
+  print(THRESHOLD)
+  
+  # change the output direcory to have one folder per country
+  output_directory = paste0("data/ups/asia_africa/one_way/upper_threshold/", NAME)
+  
+  for (ntl.raster in ntl.files) {
+    
+    # create  file_name
+    year = stringr::str_sub(ntl.raster, start = -8, end = -5)
+    file_name = paste(NAME, paste0(year, '.shp'), sep = "_")
+    print(file_name)
+    
+    #function call
+    urban_polygons(rlights = ntl.raster, shapefile = country_shp, light_threshold = THRESHOLD,
+                   output_directory = output_directory,
+                   file_name = file_name)
   }
 }
 
