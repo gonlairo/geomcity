@@ -4,14 +4,14 @@
 
 src:
 - preprocessing/
-- optimal_threshold/
-- polygons/
+- optimal_thresholds/
+- urban_polygons
 - instrument/
 - tracking/
 
 ![alt text](https://github.com/gonlairo/tfg/blob/master/src/citypoints%20_noNAF.png)
 
-**PREPROCESSING:**
+**##PREPROCESSING:**
 
 NTL images -> intercalibration -> intra-anual composition -> inter-anual series correction
 
@@ -31,7 +31,8 @@ Result: data/thresholds/final_thresholds.csv. In this directory there are lower 
 
 Given the "optimal" threshold, I create the urban polygons for each of the years availabe of NTL satellite images (ups_computation.R), which uses the function urban_polygon.R. I create a folder for each country and inside that folder one file per NTL image available. In other words,  81(countries)\*21(years) = 1701 files. They are located in data/ups/asia_africa/
 
-4. TRACKING (potentially improvable): I tried multiple ways to track: UCDB:
+**TRACKING** (potentially improvable): 
+I tried multiple ways to track:
 - tracking1
 - tracking2
 - tracking3
