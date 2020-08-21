@@ -8,6 +8,8 @@ src:
 - urban_polygons
 - instrument/
 - tracking/
+- shapemetrics/
+- models/
 
 ![alt text](https://github.com/gonlairo/tfg/blob/master/src/citypoints%20_noNAF.png)
 
