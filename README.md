@@ -98,4 +98,4 @@ Steps:
 
 I used plm package to deal with panel data.
 
-** There are many subtleties and I acknowledge the code is not fully reproducible but I hope it will be in the future. Questions about the code are welcome **
+*There are many subtleties and I acknowledge the code is not fully reproducible but I hope it will be in the future. Questions about the code are welcome*
