@@ -9,7 +9,7 @@ src:
 - instrument/
 - tracking/
 
-![text](https://github.com/gonlairo/tfg/blob/master/src/citypoints%20_noNAF.png | height=10)
+![alt text](https://github.com/gonlairo/tfg/blob/master/src/citypoints%20_noNAF.png)
 
 **PREPROCESSING:**
 
