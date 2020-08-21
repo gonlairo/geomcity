@@ -9,9 +9,9 @@ src:
 - instrument/
 - tracking/
 
-![alt text](https://github.com/gonlairo/tfg/blob/master/src/citypoints%20_noNAF.png)
+![alt text](https://github.com/gonlairo/tfg/blob/master/src/citypoints%20_noNAF.png | height=10)
 
-**##PREPROCESSING:**
+**PREPROCESSING:**
 
 NTL images -> intercalibration -> intra-anual composition -> inter-anual series correction
 
