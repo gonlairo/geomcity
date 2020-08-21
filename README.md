@@ -3,11 +3,11 @@
 ## code documentation
 
 src:
-    - preprocessing/
-    - optimal_threshold/
-    - polygons/
-    - instrument/
-    - tracking/
+- preprocessing/
+- optimal_threshold/
+- polygons/
+- instrument/
+- tracking/
 
 ![alt text](https://github.com/gonlairo/tfg/blob/master/src/citypoints%20_noNAF.png)
 STEPS:
