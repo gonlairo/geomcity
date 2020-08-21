@@ -1,4 +1,4 @@
-# shape-cities
+# geomcity
 
 ## code documentation
 
